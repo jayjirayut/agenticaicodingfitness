@@ -111,6 +111,12 @@ print("  sent:      ", state.get("sent"), "  <- still None because send hasn't r
 
 # %%
 state = app.invoke(Command(resume={"action": "approve"}), config=config_1)
+# DEMO SWAP: comment out the line above and uncomment exactly one below.
+# state = app.invoke(Command(resume={"action": "reject"}), config=config_1)
+# state = app.invoke(
+#     Command(resume={"action": "edit", "text": "We're on it. ETA 1 hour."}),
+#     config=config_1,
+# )
 print("After resume APPROVE:")
 print("  approved: ", state.get("approved"))
 print("  sent:     ", state.get("sent"))
@@ -123,6 +129,9 @@ print("  sent:     ", state.get("sent"))
 
 # %%
 config_2 = {"configurable": {"thread_id": "ticket-B"}}
+# DEMO SWAP: run the same ticket on "ticket-A" (the approved one) to see that
+# LangGraph treats it as a new run on the SAME thread, generating a fresh pause.
+# config_2 = {"configurable": {"thread_id": "ticket-A"}}
 
 state = app.invoke(
     {"ticket_body": "Cancel my account NOW.", "draft": None, "approved": None, "sent": None},

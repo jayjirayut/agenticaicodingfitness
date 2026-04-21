@@ -64,6 +64,19 @@ def general_specialist(ticket: str) -> str:
 
 SPECIALISTS = [technical_specialist, billing_specialist, general_specialist]
 
+# DEMO SWAP: add a 4th specialist and re-include SPECIALISTS below. Uncomment
+# the whole block (escalation_specialist + new SPECIALISTS line) to activate.
+#
+# @tool
+# def escalation_specialist(ticket: str) -> str:
+#     """Handle ANGRY customers, refund demands, account cancellations, or profanity."""
+#     print(f"  [routed to] escalation_specialist")
+#     return llm.invoke(
+#         f"You are a senior escalation agent. De-escalate in 2 sentences:\n\n{ticket}"
+#     ).content
+#
+# SPECIALISTS = [technical_specialist, billing_specialist, general_specialist, escalation_specialist]
+
 
 # %% [markdown]
 # ## Knob 2: the supervisor prompt shapes behavior
@@ -92,7 +105,10 @@ SUPERVISOR_PROMPT_GREEDY = (
 supervisor = create_react_agent(
     model=llm,
     tools=SPECIALISTS,
-    prompt=SUPERVISOR_PROMPT_STRICT,  # try _CHATTY or _GREEDY to see behavior shift
+    prompt=SUPERVISOR_PROMPT_STRICT,
+    # DEMO SWAP: comment the line above and uncomment exactly one below.
+    # prompt=SUPERVISOR_PROMPT_CHATTY,   # LLM narrates WHY before routing
+    # prompt=SUPERVISOR_PROMPT_GREEDY,   # LLM calls multiple tools and summarises
 )
 
 

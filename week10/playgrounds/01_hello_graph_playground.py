@@ -24,6 +24,8 @@ llm = ChatOpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENROUTER_API_KEY"),
     temperature=0,
+    # DEMO SWAP: uncomment the line below and restart the kernel to see drift.
+    # temperature=0.7,
 )
 
 
@@ -37,6 +39,9 @@ llm = ChatOpenAI(
 class SupportState(TypedDict):
     ticket_body: str
     category: Literal["TECHNICAL", "BILLING", "GENERAL"] | None
+    # DEMO SWAP: add a PRICING branch -> comment out the line above and
+    # uncomment the line below. Also uncomment CLASSIFY_PROMPT_PRICING later.
+    # category: Literal["TECHNICAL", "BILLING", "GENERAL", "PRICING"] | None
     response: str | None
 
 
@@ -59,11 +64,25 @@ CLASSIFY_PROMPT = (
     "Ticket: {ticket}"
 )
 
+# DEMO SWAP A: weak prompt, no category list -> classifier drifts into essays.
+# Copy the whole block below over CLASSIFY_PROMPT.
+# CLASSIFY_PROMPT = "Classify this ticket: {ticket}"
+
+# DEMO SWAP B: add PRICING branch (pairs with the Literal swap above).
+# CLASSIFY_PROMPT = (
+#     "Classify this support ticket into ONE of: TECHNICAL, BILLING, GENERAL, PRICING.\n"
+#     "PRICING = questions about cost, quotes, enterprise plans, discounts.\n"
+#     "Reply with ONLY the category word.\n\n"
+#     "Ticket: {ticket}"
+# )
+
 
 def classify(state: SupportState) -> SupportState:
     raw = llm.invoke(CLASSIFY_PROMPT.format(ticket=state["ticket_body"])).content.strip().upper()
     # Tiny guard rail: fall back to GENERAL on any unexpected answer.
-    category = raw if raw in {"TECHNICAL", "BILLING", "GENERAL"} else "GENERAL"
+    valid = {"TECHNICAL", "BILLING", "GENERAL"}
+    # valid = {"TECHNICAL", "BILLING", "GENERAL", "PRICING"}  # DEMO SWAP B
+    category = raw if raw in valid else "GENERAL"
     print(f"  classify node input  ticket_body = {state['ticket_body']!r}")
     print(f"  classify node raw    llm output  = {raw!r}")
     print(f"  classify node output category    = {category!r}")
@@ -89,6 +108,10 @@ graph.add_node("respond", respond)
 graph.add_edge(START, "classify")
 graph.add_edge("classify", "respond")
 graph.add_edge("respond", END)
+# DEMO SWAP: comment out the "respond" edges above and uncomment below to see
+# LangGraph reject a graph that has an orphan node. Good "why END matters" moment.
+# graph.add_edge(START, "classify")
+# graph.add_edge("classify", END)  # skip respond entirely
 
 app = graph.compile()
 print(app.get_graph().draw_ascii())
@@ -109,6 +132,11 @@ print(app.get_graph().draw_ascii())
 # %%
 result = app.invoke({
     "ticket_body": "My API is returning 500 errors since 7am.",
+    # DEMO SWAP: uncomment exactly one of these instead to see different routes.
+    # "ticket_body": "Hi",                                              # ambiguous, hits guard rail
+    # "ticket_body": "Refund for last month please.",                   # routes BILLING
+    # "ticket_body": "Do you have SOC 2?",                              # routes GENERAL
+    # "ticket_body": "How much is the Enterprise plan?",                # ambiguous, try with PRICING branch
     "category": None,
     "response": None,
 })
