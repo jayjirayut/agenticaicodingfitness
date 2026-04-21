@@ -137,19 +137,23 @@ async def main() -> None:
 def _run_main() -> None:
     """Run `main()` whether we're in a plain Python script or inside Jupyter/Cursor.
 
-    Plain `python notebooks/05_hybrid_sdk.py` has no running loop, so
-    `asyncio.run(main())` works. A Jupyter/Cursor kernel already owns a loop,
-    so we patch it with `nest_asyncio` the first time we detect that case.
+    Detect the runtime BEFORE calling asyncio.run so we don't leak tracebacks
+    into the notebook output.
     """
     try:
-        asyncio.run(main())
-    except RuntimeError as err:
-        if "running event loop" not in str(err):
-            raise
-        # We're inside an existing loop (Jupyter/Cursor). Patch and retry.
+        asyncio.get_running_loop()
+        in_running_loop = True
+    except RuntimeError:
+        in_running_loop = False
+
+    if in_running_loop:
+        # Jupyter/Cursor kernel: patch asyncio to allow a nested run.
         import nest_asyncio
         nest_asyncio.apply()
         asyncio.get_event_loop().run_until_complete(main())
+    else:
+        # Plain `python 05_hybrid_sdk.py`: standard entry point.
+        asyncio.run(main())
 
 
 if __name__ == "__main__":
