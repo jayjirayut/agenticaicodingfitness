@@ -14,3 +14,4 @@ ipykernel>=6.29.0
 jupyter>=1.1.0
 jupytext>=1.16.0
 grandalf>=0.8          # needed for app.get_graph().draw_ascii()
+nest_asyncio>=1.6.0    # needed for Ex 5 async-in-Jupyter-cell compat
