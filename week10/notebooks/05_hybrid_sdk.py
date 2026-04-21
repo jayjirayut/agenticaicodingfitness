@@ -54,6 +54,9 @@ async def diagnose_with_sdk(state: HybridState) -> HybridState:
     if not SDK_AVAILABLE:
         return {"diagnosis": "[SDK skipped: no ANTHROPIC_API_KEY; watch demo]"}
 
+    import tempfile
+    from pathlib import Path
+
     from claude_agent_sdk import AgentDefinition, ClaudeAgentOptions, query
 
     # A subagent: isolates context for focused research.
@@ -67,16 +70,32 @@ async def diagnose_with_sdk(state: HybridState) -> HybridState:
         model="sonnet",
     )
 
-    # ISOLATION: pass setting_sources=[] (empty list) to opt out of all host
-    # Claude Code config, including user-level MCP servers. If you omit this,
-    # the SDK's subprocess picks up your local MCPs and can leak private data.
-    # If you still see host data in the output, run from a terminal outside
-    # your Claude Code workspace, or use `env -i` to strip inherited env vars.
+    # HARD ISOLATION: the Claude Agent SDK spawns a `claude` CLI subprocess that,
+    # by default, reads user-level config from $HOME/.claude/ and project-level
+    # config from $CWD/.claude/. If the operator's machine has private MCP
+    # servers registered (DBs, CRM, HR), those get enumerated in the subprocess
+    # and can leak into the agent's reasoning.
+    #
+    # To block the leak we:
+    #   1. Point cwd at a fresh tempdir with no .claude/ subdirectory
+    #   2. Override HOME so $HOME/.claude/ resolves to an empty tempdir
+    #   3. Explicitly pass mcp_servers={} to register zero MCP servers
+    #   4. Keep setting_sources=[] to disable user/project settings loading
+    sandbox = Path(tempfile.mkdtemp(prefix="ex5-sandbox-"))
+    isolated_env = {
+        "HOME": str(sandbox),
+        "PATH": os.environ.get("PATH", ""),
+        "ANTHROPIC_API_KEY": os.environ["ANTHROPIC_API_KEY"],
+    }
+
     options = ClaudeAgentOptions(
         system_prompt="You are a senior support engineer.",
         agents={"researcher": researcher},
-        allowed_tools=["Agent"],  # main agent can only spawn the researcher subagent
-        setting_sources=[],       # opt out of user/project config (no MCPs, no Skills)
+        allowed_tools=["Agent"],    # main agent can only spawn the researcher subagent
+        setting_sources=[],         # disable user/project settings discovery
+        mcp_servers={},             # register zero MCP servers for this session
+        cwd=sandbox,                # no project-level .claude/ config reachable
+        env=isolated_env,           # no $HOME/.claude/ reachable either
         max_turns=5,
     )
 
