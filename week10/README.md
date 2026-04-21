@@ -37,6 +37,17 @@ LangGraph powers production agent systems at Uber, JPMorgan, BlackRock, Cisco, L
 | 04 | `notebooks/04_langsmith.py` | LangSmith tracing | Wire observability, inspect traces, tune a prompt |
 | 05 | `notebooks/05_hybrid_sdk.py` | Claude Agent SDK hybrid | Agent Skills + subagent pattern + Managed Agents preview |
 
+## Playgrounds (live-demo companions)
+
+Shorter, knob-focused versions of the first three notebooks, designed for
+in-class demo. Run cell-by-cell to watch concepts become intuitive.
+
+| # | File | What to twist |
+|---|------|---------------|
+| 01P | `playgrounds/01_hello_graph_playground.py` | State shape, prompt content, edge presence |
+| 02P | `playgrounds/02_supervisor_playground.py` | Supervisor prompts (strict / chatty / greedy), tool docstrings |
+| 03P | `playgrounds/03_checkpointing_playground.py` | Approve / Edit / Reject paths, `thread_id` scoping, raw SQLite inspection |
+
 Notebook files use [Jupytext `py:percent`](https://jupytext.readthedocs.io/en/latest/formats-scripts.html) format — VS Code / Cursor / PyCharm open them as notebooks natively. To convert to `.ipynb`:
 
 ```bash
