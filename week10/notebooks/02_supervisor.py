@@ -27,12 +27,12 @@ from langgraph.prebuilt import create_react_agent
 
 load_dotenv()
 
-# GPT-OSS 120B via OpenRouter (free tier: 20 RPM / 50 RPD per model).
-# See notebook 01 for the full model-swap comment list and alternatives.
+# Llama 3.3 70B via Groq (free tier: 30 RPM / 14,400 RPD).
+# See notebook 01 for OpenRouter fallback options.
 llm = ChatOpenAI(
-    model="openai/gpt-oss-120b:free",
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),
+    model="llama-3.3-70b-versatile",
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.getenv("GROQ_API_KEY"),
     temperature=0,
 )
 
@@ -144,3 +144,5 @@ if __name__ == "__main__":
 # Add a 4th specialist `escalation_specialist` that runs when the ticket contains
 # profanity or the phrase "cancel my account". Extend the supervisor prompt to
 # route to it.
+
+# %%

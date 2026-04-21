@@ -21,7 +21,7 @@ from langgraph.types import Command, interrupt
 
 load_dotenv()
 
-llm = ChatOpenAI(model="openai/gpt-oss-120b:free", base_url="https://openrouter.ai/api/v1", api_key=os.getenv("OPENROUTER_API_KEY"), temperature=0)
+llm = ChatOpenAI(model="llama-3.3-70b-versatile", base_url="https://api.groq.com/openai/v1", api_key=os.getenv("GROQ_API_KEY"), temperature=0)
 
 
 class TicketState(TypedDict):

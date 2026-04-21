@@ -24,20 +24,18 @@ from langgraph.graph import END, START, StateGraph
 load_dotenv()
 
 # %% [markdown]
-# ## Model (GPT-OSS 120B via OpenRouter, free tier: 20 RPM / 50 RPD per model)
+# ## Model (Llama 3.3 70B via Groq, free tier: 30 RPM / 14,400 RPD)
 #
-# Free email signup at [openrouter.ai](https://openrouter.ai/keys). No credit card.
-# GPT-OSS 120B is OpenAI's open-weight model routed through OpenRouter's free lane.
-# Strong tool calling, fast first token, and handles classification and supervisor
-# routing cleanly under throttle conditions.
+# Free email signup at [console.groq.com/keys](https://console.groq.com/keys). No
+# credit card. Groq runs Llama 3.3 70B on custom LPU hardware: sub-second latency
+# and the most generous free tier we could find for a classroom (30 RPM / 14,400
+# RPD). Strong tool calling, OpenAI-compatible API.
 #
-# Alternative free models you can swap in by un-commenting a different `model=` line
-# in the `ChatOpenAI()` call below:
+# Alternative free providers (use if Groq is unavailable for your region):
 #
-# - `qwen/qwen3-coder:free`: 480B MoE, agentic-tool-use tuned
-# - `deepseek/deepseek-r1-0528:free`: reasoning-heavy, slower, precise
-# - `z-ai/glm-4.6:free`: strong tool calling, GLM's latest free tier
-# - `meta-llama/llama-3.3-70b-instruct:free`: solid all-rounder
+# - OpenRouter `openai/gpt-oss-120b:free` (Venice backend, may throttle at peak)
+# - OpenRouter `meta-llama/llama-3.3-70b-instruct:free`
+# - OpenRouter `qwen/qwen3-coder:free`
 #
 # To use Gemini instead (requires paid tier for classroom reliability; free is 20 RPD):
 #
@@ -48,15 +46,21 @@ load_dotenv()
 
 # %%
 llm = ChatOpenAI(
-    model="openai/gpt-oss-120b:free",
-    # model="qwen/qwen3-coder:free",
-    # model="deepseek/deepseek-r1-0528:free",
-    # model="z-ai/glm-4.6:free",
-    # model="meta-llama/llama-3.3-70b-instruct:free",
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),
+    model="llama-3.3-70b-versatile",
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.getenv("GROQ_API_KEY"),
     temperature=0,
 )
+# DEMO SWAP: alternative free providers. OpenRouter's Venice lane can throttle
+# heavily at peak hours, so Groq is the class default. Uncomment to try others.
+# llm = ChatOpenAI(
+#     model="openai/gpt-oss-120b:free",                  # OpenAI open-weight via OpenRouter
+#     # model="meta-llama/llama-3.3-70b-instruct:free",  # Llama 3.3 via OpenRouter
+#     # model="qwen/qwen3-coder:free",                   # Qwen3 Coder via OpenRouter
+#     base_url="https://openrouter.ai/api/v1",
+#     api_key=os.getenv("OPENROUTER_API_KEY"),
+#     temperature=0,
+# )
 
 
 # %% [markdown]

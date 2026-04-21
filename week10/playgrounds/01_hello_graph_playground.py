@@ -20,12 +20,10 @@ from langgraph.graph import END, START, StateGraph
 load_dotenv()
 
 llm = ChatOpenAI(
-    model="openai/gpt-oss-120b:free",
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),
+    model="llama-3.3-70b-versatile",
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.getenv("GROQ_API_KEY"),
     temperature=0,
-    # DEMO SWAP: uncomment the line below and restart the kernel to see drift.
-    # temperature=0.7,
 )
 
 
@@ -154,3 +152,5 @@ for k, v in result.items():
 #
 # That is the whole surface area for 90% of production graphs. Everything in
 # Ex 2, 3, 4, 5 is just this same primitive with more nodes and sharper edges.
+
+# %%

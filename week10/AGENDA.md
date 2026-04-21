@@ -31,7 +31,7 @@ Print this or keep it on a second monitor during class.
 11. Break
 12. Ex 4 briefing — LangSmith: every run traced, diff'd, priced
 13. Ex 5 briefing — Claude Agent SDK + Skills + Subagent + Managed Agents (Apr 8 2026)
-14. Model hierarchy: GPT-OSS 120B free (primary via OpenRouter, 20 RPM / 50 RPD per model) · swap lane (Qwen3 Coder free / DeepSeek R1 free / GLM 4.6 free / Llama 3.3 70B free / paid Gemini) · Claude Sonnet 4.6 (Ex 5)
+14. Model hierarchy: Llama 3.3 70B free (primary via Groq, 30 RPM / 14,400 RPD) · swap lane (OpenRouter free GPT-OSS / Qwen3 Coder / Llama 3.3 / paid Gemini) · Claude Sonnet 4.6 (Ex 5)
 15. Show & Tell — 3 demos, 3 minutes each
 16. Homework
 17. W11 preview — Swarm intelligence
@@ -52,7 +52,7 @@ Print this or keep it on a second monitor during class.
 - **TypedDict fields not updating** → Return a dict with only the changed field. Don't mutate.
 - **`interrupt()` doesn't pause** → Forgot to compile with `checkpointer=memory`.
 - **LangSmith traces missing** → `LANGSMITH_TRACING=true` must be set BEFORE importing langchain. Restart kernel.
-- **OpenRouter tool calling fails** → check `OPENROUTER_API_KEY` is set and the `base_url="https://openrouter.ai/api/v1"` is present in the `ChatOpenAI()` call.
+- **Groq tool calling fails** → check `GROQ_API_KEY` is set and the `base_url="https://api.groq.com/openai/v1"` is present in the `ChatOpenAI()` call.
 
 ## If this breaks (fallbacks)
 
@@ -61,7 +61,7 @@ Print this or keep it on a second monitor during class.
 - Ex 5 SDK install broken or event-loop error → demo mode (you run, they watch); if your own demo breaks, show the pre-recorded screencap.
 - **Ex 5 MCP-leak risk (presenter laptop)** → if your laptop has private MCP servers registered (internal DBs, CRM, HR), the SDK subprocess may enumerate those tool names even with `setting_sources=[]`. Do not run Ex 5 live from your own machine. Options: (1) pre-record a clean screencap from a fresh profile; (2) run from a clean VM; (3) present Ex 5 as slides-only.
 - Class running long → cut Ex 4 challenge; keep everything else.
-- **Students hit 429 rate limits in Ex 2** → tell them to swap to a different free model (edit the `model=` line to `qwen/qwen3-coder:free`, `deepseek/deepseek-r1-0528:free`, or `z-ai/glm-4.6:free`); each free model has its own quota so rotating extends capacity.
+- **Students hit 429 rate limits in Ex 2** → Groq's quota is generous (30 RPM / 14,400 RPD) so this is rare, but if it happens swap to OpenRouter by replacing the `llm = ChatOpenAI(...)` block with the commented-out OpenRouter version in notebook 01.
 
 ## Plan B timing (if you slip ~15-20 min behind)
 

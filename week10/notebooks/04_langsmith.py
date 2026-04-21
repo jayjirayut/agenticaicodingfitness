@@ -40,11 +40,20 @@ else:
     print("LangSmith tracing: OFF (no LANGSMITH_API_KEY)")
 
 llm = ChatOpenAI(
-    model="openai/gpt-oss-120b:free",
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY"),
+    model="llama-3.3-70b-versatile",
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.getenv("GROQ_API_KEY"),
     temperature=0,
 )
+# DEMO SWAP: OpenRouter free fallbacks (may be throttled during peak hours).
+# llm = ChatOpenAI(
+#     model="openai/gpt-oss-120b:free",                  # OpenAI open-weight
+#     # model="meta-llama/llama-3.3-70b-instruct:free",  # Meta Llama 3.3
+#     # model="qwen/qwen3-coder:free",                   # Qwen3 Coder
+#     base_url="https://openrouter.ai/api/v1",
+#     api_key=os.getenv("OPENROUTER_API_KEY"),
+#     temperature=0,
+# )
 
 
 # %% [markdown]
